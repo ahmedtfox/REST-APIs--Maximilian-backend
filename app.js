@@ -4,7 +4,7 @@ require("dotenv").config();
 const feedRoute = require("./routes/feed");
 const app = express();
 const cors = require("cors");
-
+const mongoose = require("mongoose");
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(express.json());
 app.use(cors());
@@ -23,7 +23,15 @@ app.use((req, res, next) => {
 app.use(feedRoute);
 
 const PORT = process.env.PORT;
+const db_rrl = process.env.DB_URL;
 
-app.listen(PORT, () => {
-  console.log("Listening to port:" + PORT);
-});
+mongoose
+  .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
+  .then((result) => {
+    app.listen(PORT, () => {
+      console.log("Listening to port:" + PORT);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
