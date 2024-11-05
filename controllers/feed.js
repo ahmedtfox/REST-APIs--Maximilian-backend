@@ -1,4 +1,4 @@
-const express = require("express");
+const { validationResult } = require("express-validator");
 
 exports.getPosts = (req, res, next) => {
   const posts = [
@@ -18,6 +18,14 @@ exports.getPosts = (req, res, next) => {
 exports.createPost = (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(422).json({
+      message: "validation failed",
+      error: result.array(),
+    });
+  }
+
   const postCreated = [
     {
       _id: new Date().toISOString(),
