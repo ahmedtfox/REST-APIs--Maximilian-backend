@@ -16,11 +16,22 @@ app.use((req, res, next) => {
     "OPTIONS,GET,POST,PUT,PATCH,DELETE"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  console.log("request");
   next();
 });
 
 app.use(feedRoute);
+
+//error handling
+app.use((error, req, res, next) => {
+  console.log(error);
+  const statusCode = error.statusCode || 500;
+  const message = error.message;
+  const errorDetails = error.errorDetails || undefined;
+  return res.status(statusCode).json({
+    message: message,
+    errorDetails,
+  });
+});
 
 const PORT = process.env.PORT;
 const db_rrl = process.env.DB_URL;
