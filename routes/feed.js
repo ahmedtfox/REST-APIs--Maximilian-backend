@@ -3,8 +3,8 @@ const router = express.Router();
 const feedController = require("../controllers/feed");
 
 const { body } = require("express-validator");
-
 router.get("/posts", feedController.getPosts);
+router.get("/posts/:postId", feedController.getPost);
 router.post(
   "/post",
   [
