@@ -1,5 +1,7 @@
 const express = require("express");
 require("dotenv").config();
+const feedRoute = require("./routes/feed");
+
 const app = express();
 
 app.use(express.json());
@@ -14,8 +16,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(feedRoute);
+
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
-  console.log("conected");
+  console.log("Listening to port:" + PORT);
 });
