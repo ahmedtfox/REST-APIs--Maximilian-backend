@@ -18,9 +18,11 @@ const fileFilter = (req, file, cb) => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    req.uploadStatus = "success";
     cb(null, "images");
   },
   filename: (req, file, cb) => {
+    req.uploadStatus = "success";
     const dateString = moment().format("YYYY-MM-DD HH-mm-SSS");
     const diskFileName = dateString + "." + file.mimetype.split("/")[1];
     cb(null, diskFileName);

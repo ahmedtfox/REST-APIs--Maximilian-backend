@@ -2,28 +2,25 @@ const express = require("express");
 const router = express.Router();
 const feedController = require("../controllers/feed");
 const upload = require("../utils/uploadFiles");
-const { body } = require("express-validator");
+const {
+  validatePost,
+  handleValidationErrors,
+} = require("../middlewares/validation");
 router.get("/posts", feedController.getPosts);
 router.get("/posts/:postId", feedController.getPost);
 router.post(
   "/post",
   upload.single("image"),
-  [
-    body("title")
-      .trim()
-      .isLength({ min: 5 })
-      .withMessage("title must be more than 5 characters"),
-    body("content").trim().isLength({ min: 5 }),
-  ],
-
+  validatePost,
+  handleValidationErrors,
   feedController.createPost
 );
 
-module.exports = router;
+router.put(
+  "/posts/:postId",
+  /*   validatePost,
+  handleValidationErrors, */
+  feedController.updatePost
+);
 
-/* 
- [
-    body("title").trim().isLength({ min: 5 }),
-    body("content").isString().withMessage("not string"),
-  ],
-*/
+module.exports = router;

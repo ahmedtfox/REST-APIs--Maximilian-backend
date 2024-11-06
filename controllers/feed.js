@@ -1,5 +1,5 @@
-const { validationResult } = require("express-validator");
 const Post = require("../model/post");
+const removeFile = require("../middlewares/removeFile");
 
 exports.getPosts = async (req, res, next) => {
   try {
@@ -37,20 +37,10 @@ exports.createPost = async (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   let imageUrl = "";
-  const result = validationResult(req);
-
-  if (!result.isEmpty()) {
-    const err = new Error("validation failed");
-    err.statusCode = 422;
-    err.errorDetails = result.array();
-    /*     throw err; */
-    return next(err);
-  }
 
   if (req.uploadStatus === "wrong file type") {
     const err = new Error(req.uploadStatus);
     err.statusCode = 422;
-    err.errorDetails = result.array();
     /*     throw err; */
     return next(err);
   }
@@ -68,6 +58,66 @@ exports.createPost = async (req, res, next) => {
     const result = await newPost.save();
     res.status(201).json({
       message: "post created successfully!",
+      post: result,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.updatePost = async (req, res, next) => {
+  const postId = req.params.postId;
+  let title = req.body.title;
+  let content = req.body.content;
+  let imageUrl;
+  console.log(title, content);
+
+  if (req.uploadStatus === "wrong file type") {
+    const err = new Error(req.uploadStatus);
+    err.statusCode = 422;
+    /*     throw err; */
+    return next(err);
+  }
+
+  try {
+    const post = await Post.findOne({ _id: postId });
+    if (title === post.title) {
+      title = undefined;
+    }
+    if (content === post.content) {
+      content = undefined;
+    }
+
+    if (req.file) {
+      removeFile(undefined, post.imageUrl);
+      imageUrl = req.file.path;
+    }
+    if (!(title || content || imageUrl)) {
+      const err = new Error("no changes");
+      err.statusCode = 422;
+      /*     throw err; */
+      return next(err);
+    }
+    const result = await Post.findByIdAndUpdate(
+      postId,
+      {
+        title,
+        content,
+        imageUrl,
+      },
+      { new: true }
+    );
+
+    let formattedCreatedAt = result.formattedCreatedAt;
+    result._doc["formattedCreatedAt"] = formattedCreatedAt;
+    let formattedUpdatedAt = result.formattedUpdatedAt;
+    result._doc["formattedUpdatedAt"] = formattedUpdatedAt;
+
+    res.status(200).json({
+      message: "post updated successfully!",
       post: result,
     });
   } catch (err) {
