@@ -36,7 +36,7 @@ exports.getPost = async (req, res, next) => {
 exports.createPost = async (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
-  const imageUrl = "images/77.jpg";
+  let imageUrl = "";
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
@@ -47,10 +47,19 @@ exports.createPost = async (req, res, next) => {
     return next(err);
   }
 
+  if (req.uploadStatus === "wrong file type") {
+    const err = new Error(req.uploadStatus);
+    err.statusCode = 422;
+    err.errorDetails = result.array();
+    /*     throw err; */
+    return next(err);
+  }
+  imageUrl = req.file.path;
+
   const newPost = new Post({
     title,
     content,
-    imageUrl: "images/77.jpg",
+    imageUrl,
     creator: {
       name: "ahmed",
     },

@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const feedController = require("../controllers/feed");
-
+const upload = require("../utils/uploadFiles");
 const { body } = require("express-validator");
 router.get("/posts", feedController.getPosts);
 router.get("/posts/:postId", feedController.getPost);
 router.post(
   "/post",
+  upload.single("image"),
   [
     body("title")
       .trim()
@@ -14,6 +15,7 @@ router.post(
       .withMessage("title must be more than 5 characters"),
     body("content").trim().isLength({ min: 5 }),
   ],
+
   feedController.createPost
 );
 
