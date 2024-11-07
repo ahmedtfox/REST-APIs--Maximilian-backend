@@ -26,6 +26,7 @@ app.use((req, res, next) => {
   console.log(req.params);
   console.log(req.url);
   console.log(req.query);
+  console.log(req.headers);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-mETHODS",
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoute);
 app.use("/auth", authRoute);
+
 //error handling
 app.use((error, req, res, next) => {
   error.time = moment().format("HH:mm:SS");

@@ -6,10 +6,14 @@ const {
   validatePost,
   handleValidationErrors,
 } = require("../middlewares/validation");
-router.get("/posts", feedController.getPosts);
-router.get("/posts/:postId", feedController.getPost);
+
+const isAuth = require("../middlewares/is-auth");
+
+router.get("/posts", isAuth, feedController.getPosts);
+router.get("/posts/:postId", isAuth, feedController.getPost);
 router.post(
   "/post",
+  isAuth,
   upload.single("image"),
   validatePost,
   handleValidationErrors,
@@ -18,11 +22,12 @@ router.post(
 
 router.put(
   "/posts/:postId",
-  /*   validatePost,
-  handleValidationErrors, */
+  isAuth,
+  validatePost,
+  handleValidationErrors,
   feedController.updatePost
 );
 
-router.delete("/posts/:postId", feedController.deletePost);
+router.delete("/posts/:postId", isAuth, feedController.deletePost);
 
 module.exports = router;
