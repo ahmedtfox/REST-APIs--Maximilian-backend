@@ -3,6 +3,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const feedRoute = require("./routes/feed");
+const authRoute = require("./routes/auth");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -34,8 +35,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(feedRoute);
-
+app.use("/feed", feedRoute);
+app.use("/auth", authRoute);
 //error handling
 app.use((error, req, res, next) => {
   error.time = moment().format("HH:mm:SS");
