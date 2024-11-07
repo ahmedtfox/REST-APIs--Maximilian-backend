@@ -24,6 +24,7 @@ app.use((req, res, next) => {
   console.log(req.method);
   console.log(req.params);
   console.log(req.url);
+  console.log(req.query);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-mETHODS",

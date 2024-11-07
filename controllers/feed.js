@@ -3,7 +3,10 @@ const removeFile = require("../middlewares/removeFile");
 
 exports.getPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find({}, { __v: false });
+    const limit = req.query.limit || 4;
+    const page = req.query.page || 1;
+    const skip = (page - 1) * limit;
+    const posts = await Post.find({}, { __v: false }).limit(limit).skip(skip);
     if (!posts) {
       const error = new Error("post not found");
       error.statusCode = 400;
