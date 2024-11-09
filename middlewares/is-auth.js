@@ -12,7 +12,6 @@ module.exports = async (req, res, next) => {
 
     const token = tokenHeaders.split(" ")[1];
     const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-    console.log(token);
     const result = jwt.verify(token, JWT_SECRET_KEY);
     if (result) {
       req.userId = result.userId; // Set user info to request object

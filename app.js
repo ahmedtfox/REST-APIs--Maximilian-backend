@@ -21,12 +21,6 @@ app.use(cors());
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
-  console.log(req.body);
-  console.log(req.method);
-  console.log(req.params);
-  console.log(req.url);
-  console.log(req.query);
-  console.log(req.headers);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-mETHODS",

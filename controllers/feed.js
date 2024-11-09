@@ -22,7 +22,6 @@ exports.getPosts = async (req, res, next) => {
 
 exports.getPost = async (req, res, next) => {
   const postId = req.params.postId;
-  console.log(postId);
   try {
     const post = await Post.findById(postId, { __v: false });
     if (!post) {
@@ -45,7 +44,6 @@ exports.createPost = async (req, res, next) => {
   if (req.uploadStatus === "wrong file type") {
     const err = new Error(req.uploadStatus);
     err.statusCode = 422;
-    /*     throw err; */
     return next(err);
   }
   imageUrl = req.file.path;
@@ -79,12 +77,10 @@ exports.updatePost = async (req, res, next) => {
   let title = req.body.title;
   let content = req.body.content;
   let imageUrl;
-  console.log(title, content);
 
   if (req.uploadStatus === "wrong file type") {
     const err = new Error(req.uploadStatus);
     err.statusCode = 422;
-    /*     throw err; */
     return next(err);
   }
 

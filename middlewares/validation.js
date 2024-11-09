@@ -41,7 +41,6 @@ const handleValidationErrors = (req, res, next) => {
     const err = new Error("validation failed");
     err.statusCode = 422;
     err.errorDetails = result.array();
-    /*     throw err; */
     return next(err);
   }
 };
