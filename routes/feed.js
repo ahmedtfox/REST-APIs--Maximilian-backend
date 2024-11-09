@@ -4,6 +4,7 @@ const feedController = require("../controllers/feed");
 const upload = require("../utils/uploadFiles");
 const {
   validatePost,
+  validateStatus,
   handleValidationErrors,
 } = require("../middlewares/validation");
 
@@ -30,4 +31,12 @@ router.put(
 
 router.delete("/posts/:postId", isAuth, feedController.deletePost);
 
+router.get("/status", isAuth, feedController.getStatus);
+router.patch(
+  "/status",
+  isAuth,
+  validateStatus,
+  handleValidationErrors,
+  feedController.updateStatus
+);
 module.exports = router;

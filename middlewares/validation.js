@@ -24,6 +24,14 @@ const validateUser = [
     .withMessage("Password must be at least 5 characters long."),
 ];
 
+const validateStatus = [
+  body("status")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Please enter a valid status."),
+];
+
 // Middleware to handle validation errors
 const handleValidationErrors = (req, res, next) => {
   const result = validationResult(req);
@@ -41,5 +49,6 @@ const handleValidationErrors = (req, res, next) => {
 module.exports = {
   validatePost,
   validateUser,
+  validateStatus,
   handleValidationErrors,
 };
