@@ -13,7 +13,8 @@ exports.signup = async (req, res, next) => {
       err.statusCode = 422;
       return next(err);
     }
-    const password = await bcrypt.hash(passwordText, 12);
+    // const password = await bcrypt.hash(passwordText, 12);
+    password = passwordText;
     const newUser = new User({
       email,
       password,
@@ -44,7 +45,7 @@ exports.login = async (req, res, next) => {
       err.statusCode = 401;
       return next(err);
     }
-    const checkPassword = await bcrypt.compare(password, user.password);
+    checkPassword = await user.comparePassword(password);
     if (!checkPassword) {
       const err = new Error("password not correct");
       err.statusCode = 401;
