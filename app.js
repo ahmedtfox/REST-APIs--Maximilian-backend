@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const removeFile = require("./middlewares/removeFile");
 const moment = require("moment");
 const { Socket } = require("socket.io");
+const socket = require("./socket");
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,22 +50,34 @@ app.use((error, req, res, next) => {
     errorDetails,
   });
 });
-
+let server, io;
 const PORT = process.env.PORT;
 const db_rrl = process.env.DB_URL;
 
 mongoose
   .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
-  .then((result) => {
-    const server = app.listen(PORT, () => {
-      console.log("Listening to port:" + PORT);
-    });
+  .then((result) => {})
+  .catch((err) => {
+    console.log(err);
+  });
 
-    const io = require("./socket").init(server);
-    io.on("connection", (socket) => {
-      console.log("Client connected");
-    });
+mongoose
+  .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
+  .then((result) => {
+    console.log("connected to db successfully");
   })
   .catch((err) => {
     console.log(err);
   });
+
+server = app.listen(PORT, () => {
+  console.log("Listening to port:" + PORT);
+});
+io = require("./socket").init(server);
+io.on("connection", (socket) => {
+  console.log("Client connected");
+  io.emit("on connection", "hi");
+  socket.on("msg", (msg) => {
+    console.log(msg);
+  });
+});

@@ -2,6 +2,7 @@ const Post = require("../model/post");
 const removeFile = require("../middlewares/removeFile");
 const User = require("../model/user");
 const asyncWrapper = require("../middlewares/asyncWrapper");
+const io = require("../socket");
 
 exports.getPosts = (req, res, next) => {
   asyncWrapper(next, async () => {
@@ -57,6 +58,7 @@ exports.createPost = (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.push(result);
     const updateUser = await user.save();
+    io.getIO().emit("posts", { action: "create", post: result });
     res.status(201).json({
       message: "post created successfully!",
       post: result,
