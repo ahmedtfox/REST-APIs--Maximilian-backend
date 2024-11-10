@@ -12,7 +12,8 @@ exports.getPosts = (req, res, next) => {
     const posts = await Post.find({}, { __v: false })
       .populate("creator")
       .limit(limit)
-      .skip(skip);
+      .skip(skip)
+      .sort({ createdAt: -1 });
     if (!posts) {
       const error = new Error("posts not found");
       error.statusCode = 400;
