@@ -172,6 +172,8 @@ exports.deletePost = (req, res, next) => {
     //  user.posts.pull(postId);
     const updateUser = await user.save();
     removeFile(undefined, result.imageUrl);
+
+    io.getIO().emit("posts", { action: "delete", post: postId });
     res.status(200).json({
       message: "post deleted successfully!",
       post: result,
