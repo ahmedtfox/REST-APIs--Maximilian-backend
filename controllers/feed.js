@@ -4,7 +4,7 @@ const User = require("../model/user");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 
 exports.getPosts = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const limit = req.query.limit || 4;
     const page = req.query.page || 1;
     const skip = (page - 1) * limit;
@@ -22,7 +22,7 @@ exports.getPosts = (req, res, next) => {
 };
 
 exports.getPost = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const postId = req.params.postId;
     const post = await Post.findById(postId, { __v: false });
     if (!post) {
@@ -35,7 +35,7 @@ exports.getPost = (req, res, next) => {
 };
 
 exports.createPost = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const title = req.body.title;
     const content = req.body.content;
     let imageUrl = "";
@@ -66,7 +66,7 @@ exports.createPost = (req, res, next) => {
 };
 
 exports.updatePost = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const postId = req.params.postId;
     let title = req.body.title;
     let content = req.body.content;
@@ -124,7 +124,7 @@ exports.updatePost = (req, res, next) => {
 };
 
 exports.deletePost = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const postId = req.params.postId;
     const post = await Post.findById(postId);
     if (!post) {
@@ -156,7 +156,7 @@ exports.deletePost = (req, res, next) => {
 };
 
 exports.getStatus = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const user = await User.findById(req.userId);
     if (!user) {
       const err = new Error("not authorized!");
@@ -168,7 +168,7 @@ exports.getStatus = (req, res, next) => {
 };
 
 exports.updateStatus = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const newStatus = req.body.status || "active";
     const user = await User.findById(req.userId);
     if (!user) {

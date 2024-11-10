@@ -1,8 +1,10 @@
-const asyncWrapper = async (req, res, next, cb) => {
+const asyncWrapper = async (next, cb) => {
   try {
     await cb();
   } catch (error) {
-    error.statusCode = 500;
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
     return next(error);
   }
 };

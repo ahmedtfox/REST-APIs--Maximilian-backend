@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 
 exports.signup = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const email = req.body.email;
     const passwordText = req.body.password;
     const name = req.body.name;
@@ -32,7 +32,7 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  asyncWrapper(req, res, next, async () => {
+  asyncWrapper(next, async () => {
     const email = req.body.email;
     const password = req.body.password;
 
