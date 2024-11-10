@@ -58,7 +58,16 @@ exports.createPost = (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.push(result);
     const updateUser = await user.save();
-    io.getIO().emit("posts", { action: "create", post: result });
+    io.getIO().emit("posts", {
+      action: "create",
+      post: {
+        ...result._doc,
+        creator: {
+          _id: req.userId,
+          name: user.name,
+        },
+      },
+    });
     res.status(201).json({
       message: "post created successfully!",
       post: result,
@@ -80,10 +89,11 @@ exports.updatePost = (req, res, next) => {
       throw err;
     }
 
-    const post = await Post.findOne({ _id: postId });
-    const postCreatorId = post.creator.toString() || "";
+    const post = await Post.findById(postId).populate("creator");
+    console.log(post);
+    const postCreatorId = post.creator._id.toString() || "";
     if (postCreatorId !== req.userId) {
-      const err = new Error("not authorized!");
+      const err = new Error("Not authorized!");
       err.statusCode = 422;
       throw err;
     }
@@ -117,6 +127,17 @@ exports.updatePost = (req, res, next) => {
     result._doc["formattedCreatedAt"] = formattedCreatedAt;
     let formattedUpdatedAt = result.formattedUpdatedAt;
     result._doc["formattedUpdatedAt"] = formattedUpdatedAt;
+
+    io.getIO().emit("posts", {
+      action: "update",
+      post: {
+        ...result._doc,
+        creator: {
+          name: post.creator.name,
+          id: post.creator._id,
+        },
+      },
+    });
 
     res.status(200).json({
       message: "post updated successfully!",
