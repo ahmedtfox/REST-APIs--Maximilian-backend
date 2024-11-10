@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
     if (!tokenHeaders) {
       const err = new Error("Invalid token");
       err.statusCode = 401;
-      return next(err);
+      throw err;
     }
 
     const token = tokenHeaders.split(" ")[1];
@@ -19,7 +19,7 @@ module.exports = async (req, res, next) => {
     } else {
       const err = new Error("Invalid token");
       err.statusCode = 401;
-      return next(err);
+      throw err;
     }
   } catch (err) {
     if (!err.statusCode) {
