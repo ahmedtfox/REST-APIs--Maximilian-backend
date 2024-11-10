@@ -1,17 +1,19 @@
 const User = require("../model/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const asyncWrapper = require("../middlewares/asyncWrapper");
 
-exports.signup = async (req, res, next) => {
-  const email = req.body.email;
-  const passwordText = req.body.password;
-  const name = req.body.name;
-  try {
+exports.signup = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
+    const email = req.body.email;
+    const passwordText = req.body.password;
+    const name = req.body.name;
+
     const checkEmail = await User.findOne({ email });
     if (checkEmail) {
       const err = new Error("this email already exist");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     // const password = await bcrypt.hash(passwordText, 12);
     password = passwordText;
@@ -26,30 +28,25 @@ exports.signup = async (req, res, next) => {
       message: "user created successfully!",
       post: result,
     });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };
 
-exports.login = async (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
+exports.login = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
+    const email = req.body.email;
+    const password = req.body.password;
 
-  try {
     const user = await User.findOne({ email });
     if (!user) {
       const err = new Error("user not exist");
       err.statusCode = 401;
-      return next(err);
+      throw err;
     }
     checkPassword = await user.comparePassword(password);
     if (!checkPassword) {
       const err = new Error("password not correct");
       err.statusCode = 401;
-      return next(err);
+      throw err;
     }
 
     const userId = user._id.toString();
@@ -65,10 +62,5 @@ exports.login = async (req, res, next) => {
       token,
       userId,
     });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };

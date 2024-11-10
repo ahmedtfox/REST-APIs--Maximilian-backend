@@ -1,9 +1,10 @@
 const Post = require("../model/post");
 const removeFile = require("../middlewares/removeFile");
 const User = require("../model/user");
+const asyncWrapper = require("../middlewares/asyncWrapper");
 
-exports.getPosts = async (req, res, next) => {
-  try {
+exports.getPosts = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
     const limit = req.query.limit || 4;
     const page = req.query.page || 1;
     const skip = (page - 1) * limit;
@@ -12,52 +13,46 @@ exports.getPosts = async (req, res, next) => {
       .limit(limit)
       .skip(skip);
     if (!posts) {
-      const error = new Error("post not found");
+      const error = new Error("posts not found");
       error.statusCode = 400;
-      return next(error);
+      throw error;
     }
     res.status(200).json({ posts });
-  } catch (error) {
-    error.statusCode = 500;
-    return next(error);
-  }
+  });
 };
 
-exports.getPost = async (req, res, next) => {
-  const postId = req.params.postId;
-  try {
+exports.getPost = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
+    const postId = req.params.postId;
     const post = await Post.findById(postId, { __v: false });
     if (!post) {
       const error = new Error("post not found");
       error.statusCode = 400;
-      return next(error);
+      throw error;
     }
     res.status(200).json({ message: "post fetched", post });
-  } catch (error) {
-    error.statusCode = 500;
-    return next(error);
-  }
+  });
 };
 
-exports.createPost = async (req, res, next) => {
-  const title = req.body.title;
-  const content = req.body.content;
-  let imageUrl = "";
+exports.createPost = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
+    const title = req.body.title;
+    const content = req.body.content;
+    let imageUrl = "";
 
-  if (req.uploadStatus === "wrong file type") {
-    const err = new Error(req.uploadStatus);
-    err.statusCode = 422;
-    return next(err);
-  }
-  imageUrl = req.file.path;
+    if (req.uploadStatus === "wrong file type") {
+      const error = new Error(req.uploadStatus);
+      error.statusCode = 422;
+      throw error;
+    }
+    imageUrl = req.file.path;
 
-  const newPost = new Post({
-    title,
-    content,
-    imageUrl,
-    creator: req.userId,
-  });
-  try {
+    const newPost = new Post({
+      title,
+      content,
+      imageUrl,
+      creator: req.userId,
+    });
     const result = await newPost.save();
     const user = await User.findById(req.userId);
     user.posts.push(result);
@@ -67,33 +62,28 @@ exports.createPost = async (req, res, next) => {
       post: result,
       creator: { _id: user._id, name: user.name },
     });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };
 
-exports.updatePost = async (req, res, next) => {
-  const postId = req.params.postId;
-  let title = req.body.title;
-  let content = req.body.content;
-  let imageUrl;
+exports.updatePost = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
+    const postId = req.params.postId;
+    let title = req.body.title;
+    let content = req.body.content;
+    let imageUrl;
 
-  if (req.uploadStatus === "wrong file type") {
-    const err = new Error(req.uploadStatus);
-    err.statusCode = 422;
-    return next(err);
-  }
+    if (req.uploadStatus === "wrong file type") {
+      const err = new Error(req.uploadStatus);
+      err.statusCode = 422;
+      throw err;
+    }
 
-  try {
     const post = await Post.findOne({ _id: postId });
     const postCreatorId = post.creator.toString() || "";
     if (postCreatorId !== req.userId) {
       const err = new Error("not authorized!");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     if (title === post.title) {
       title = undefined;
@@ -109,7 +99,7 @@ exports.updatePost = async (req, res, next) => {
     if (!(title || content || imageUrl)) {
       const err = new Error("no changes");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     const result = await Post.findByIdAndUpdate(
       postId,
@@ -130,29 +120,24 @@ exports.updatePost = async (req, res, next) => {
       message: "post updated successfully!",
       post: result,
     });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };
 
-exports.deletePost = async (req, res, next) => {
-  const postId = req.params.postId;
-  try {
+exports.deletePost = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
+    const postId = req.params.postId;
     const post = await Post.findById(postId);
     if (!post) {
       const err = new Error("post not found!");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     const user = await User.findById(req.userId);
     const postCreatorId = post.creator.toString() || "";
     if (postCreatorId !== req.userId) {
       const err = new Error("not authorized!");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     const result = await Post.findByIdAndDelete(postId);
     const updatedPosts = user.posts.filter((p) => {
@@ -167,38 +152,29 @@ exports.deletePost = async (req, res, next) => {
       message: "post deleted successfully!",
       post: result,
     });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };
 
-exports.getStatus = async (req, res, next) => {
-  try {
+exports.getStatus = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
     const user = await User.findById(req.userId);
     if (!user) {
       const err = new Error("not authorized!");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     res.status(200).json({ status: user.status });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };
-exports.updateStatus = async (req, res, next) => {
-  try {
+
+exports.updateStatus = (req, res, next) => {
+  asyncWrapper(req, res, next, async () => {
     const newStatus = req.body.status || "active";
     const user = await User.findById(req.userId);
     if (!user) {
       const err = new Error("not authorized!");
       err.statusCode = 422;
-      return next(err);
+      throw err;
     }
     user.status = newStatus;
     const result = await user.save();
@@ -206,10 +182,5 @@ exports.updateStatus = async (req, res, next) => {
       msg: "status successfully updated ",
       updatedStatus: result.status,
     });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
+  });
 };
