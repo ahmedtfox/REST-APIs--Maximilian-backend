@@ -9,6 +9,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const removeFile = require("./middlewares/removeFile");
 const moment = require("moment");
+const { Socket } = require("socket.io");
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -55,8 +56,13 @@ const db_rrl = process.env.DB_URL;
 mongoose
   .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
   .then((result) => {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log("Listening to port:" + PORT);
+    });
+
+    const io = require("socket.io")(server);
+    io.on("connection", (socket) => {
+      console.log("Client connected");
     });
   })
   .catch((err) => {
