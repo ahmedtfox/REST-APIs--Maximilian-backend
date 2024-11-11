@@ -11,7 +11,7 @@ const removeFile = require("./middlewares/removeFile");
 const moment = require("moment");
 const { Socket } = require("socket.io");
 const socket = require("./socket");
-
+const isAuth = require("./middlewares/is-auth");
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/feed/images", isAuth, express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
