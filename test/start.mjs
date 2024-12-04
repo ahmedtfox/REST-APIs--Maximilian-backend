@@ -1,7 +1,16 @@
 import { expect } from "chai";
+import isAuth from "../middlewares/is-auth.js";
 
-it("should add numbers correctly", function () {
-  const num1 = 4;
-  const num2 = 5;
-  expect(num1 + num2).to.equal(9);
+describe("Auth Middleware", () => {
+  it("should throw an error if no Authorization header is present", () => {
+    const req = {
+      headers: {
+        Authorization: null,
+      },
+    }; // Simulating no Authorization header
+    const res = {};
+    const next = () => {};
+
+    expect(() => isAuth(req, res, next)).to.throw("Invalid token");
+  });
 });
