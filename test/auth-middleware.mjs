@@ -1,4 +1,6 @@
 import { expect } from "chai";
+import { stub } from "sinon";
+import jwt from "jsonwebtoken";
 import isAuth from "../middlewares/is-auth.js";
 
 describe("Auth Middleware", () => {
@@ -36,5 +38,21 @@ describe("Auth Middleware", () => {
     const next = () => {};
 
     expect(() => isAuth(req, res, next)).to.throw();
+  });
+
+  it("should yield a userId after decoding the token", function () {
+    const req = {
+      headers: {
+        Authorization: "Bearer asdsadfhjghgjdfuewwwww",
+      },
+    }; // Simulating no Authorization header
+    const res = {};
+    const next = () => {};
+    stub(jwt, "verify");
+    jwt.verify.returns({ userId: "abc" });
+    isAuth(req, res, next);
+    expect(req).to.have.property("userId", "abc");
+    expect(jwt.verify.called).to.be.true;
+    jwt.verify.restore();
   });
 });
