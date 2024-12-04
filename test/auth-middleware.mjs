@@ -25,4 +25,16 @@ describe("Auth Middleware", () => {
 
     expect(() => isAuth(req, res, next)).to.throw();
   });
+
+  it("should throw an error if the token cannot be verified", function () {
+    const req = {
+      headers: {
+        Authorization: "Bearer xyz",
+      },
+    }; // Simulating no Authorization header
+    const res = {};
+    const next = () => {};
+
+    expect(() => isAuth(req, res, next)).to.throw();
+  });
 });
