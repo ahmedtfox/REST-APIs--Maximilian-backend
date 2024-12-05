@@ -6,7 +6,7 @@ const feedRoute = require("./routes/feed");
 const authRoute = require("./routes/auth");
 const app = express();
 const cors = require("cors");
-const mongoose = require("mongoose");
+const connectDB = require("./utils/dbConnect");
 const removeFile = require("./middlewares/removeFile");
 const moment = require("moment");
 const { Socket } = require("socket.io");
@@ -52,16 +52,8 @@ app.use((error, req, res, next) => {
 });
 let server, io;
 const PORT = process.env.PORT;
-const db_rrl = process.env.DB_URL;
 
-mongoose
-  .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
-  .then((result) => {
-    console.log("connected to db successfully");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+connectDB("REST-APIs-Maximilian-course");
 
 server = app.listen(PORT, () => {
   console.log("Listening to port:" + PORT);
