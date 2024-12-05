@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth");
+const isAuth = require("../middlewares/is-auth");
 const upload = require("../utils/uploadFiles");
 const {
   validateUser,
@@ -15,5 +16,5 @@ router.post(
 );
 
 router.post("/login", authController.login);
-
+router.get("/status", isAuth, authController.getStatus);
 module.exports = router;
