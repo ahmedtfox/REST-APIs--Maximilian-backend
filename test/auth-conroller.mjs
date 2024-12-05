@@ -2,8 +2,8 @@ import { expect } from "chai";
 import Sinon, { stub } from "sinon";
 import auth from "../controllers/auth.js";
 import User from "../model/user.js";
-import dbConnect from "../utils/dbConnect.js";
-describe("Auth Middleware", () => {
+import { dbConnect, dbDisconnect } from "../utils/dbConnect.js";
+describe("Auth Controller", () => {
   it("should throw a 500 error if accessing the database fails", async function (done) {
     // Stub the findOne method to throw an error
     Sinon.stub(User, "findOne").throws();
@@ -28,6 +28,7 @@ describe("Auth Middleware", () => {
     auth.login(req, res, next);
   });
   it("should send a response with a valid user status for an existing user", async function () {
+    const dummyUserId = "6751afcb1e336b983c0d630a";
     try {
       await dbConnect("test");
       const newUser = new User({
@@ -35,10 +36,11 @@ describe("Auth Middleware", () => {
         password: "tester",
         name: "test",
         posts: [],
+        _id: dummyUserId,
       });
-      const user = await newUser.save();
+      await newUser.save();
       const req = {
-        userId: user.id,
+        userId: dummyUserId,
       };
       const res = {
         statusCode: 500,
@@ -55,11 +57,12 @@ describe("Auth Middleware", () => {
       await auth.getStatus(req, res, next).then(() => {
         expect(res.statusCode).to.be.equal(200);
         expect(res.userStatus).to.be.equal("i am new");
-        //done(); // Signal Mocha that the test is done
       });
-      //done();
     } catch (error) {
-      console.log(error); // Pass assertion errors to Mocha
+      throw error;
+    } finally {
+      await User.deleteMany({});
+      await dbDisconnect();
     }
   });
 });
