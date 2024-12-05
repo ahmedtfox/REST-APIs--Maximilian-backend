@@ -1,11 +1,10 @@
 const Post = require("../model/post");
 const removeFile = require("../middlewares/removeFile");
 const User = require("../model/user");
-const asyncWrapper = require("../middlewares/asyncWrapper");
 const io = require("../socket");
 
-exports.getPosts = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.getPosts = async (req, res, next) => {
+  try {
     const limit = req.query.limit || 4;
     const page = req.query.page || 1;
     const skip = (page - 1) * limit;
@@ -20,11 +19,16 @@ exports.getPosts = (req, res, next) => {
       throw error;
     }
     res.status(200).json({ posts });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    return next(error);
+  }
 };
 
-exports.getPost = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.getPost = async (req, res, next) => {
+  try {
     const postId = req.params.postId;
     const post = await Post.findById(postId, { __v: false });
     if (!post) {
@@ -33,11 +37,16 @@ exports.getPost = (req, res, next) => {
       throw error;
     }
     res.status(200).json({ message: "post fetched", post });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    return next(error);
+  }
 };
 
-exports.createPost = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.createPost = async (req, res, next) => {
+  try {
     const title = req.body.title;
     const content = req.body.content;
     let imageUrl = "";
@@ -74,11 +83,16 @@ exports.createPost = (req, res, next) => {
       post: result,
       creator: { _id: user._id, name: user.name },
     });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    return next(error);
+  }
 };
 
-exports.updatePost = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.updatePost = async (req, res, next) => {
+  try {
     const postId = req.params.postId;
     let title = req.body.title;
     let content = req.body.content;
@@ -144,11 +158,16 @@ exports.updatePost = (req, res, next) => {
       message: "post updated successfully!",
       post: result,
     });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    return next(error);
+  }
 };
 
-exports.deletePost = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.deletePost = async (req, res, next) => {
+  try {
     const postId = req.params.postId;
     const post = await Post.findById(postId);
     if (!post) {
@@ -178,11 +197,16 @@ exports.deletePost = (req, res, next) => {
       message: "post deleted successfully!",
       post: result,
     });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    return next(error);
+  }
 };
 
-exports.updateStatus = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.updateStatus = async (req, res, next) => {
+  try {
     const newStatus = req.body.status || "active";
     const user = await User.findById(req.userId);
     if (!user) {
@@ -196,5 +220,10 @@ exports.updateStatus = (req, res, next) => {
       msg: "status successfully updated ",
       updatedStatus: result.status,
     });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    return next(error);
+  }
 };
