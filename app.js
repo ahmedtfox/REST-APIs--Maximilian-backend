@@ -53,7 +53,11 @@ app.use((error, req, res, next) => {
 let server, io;
 const PORT = process.env.PORT;
 
-dbConnect("REST-APIs-Maximilian-course");
+/* dbConnect("REST-APIs-Maximilian-course").then((result) => {
+  console.log(result);
+}); */
+
+dbConnect("REST-APIs-Maximilian-course", "console");
 
 server = app.listen(PORT, () => {
   console.log("Listening to port:" + PORT);

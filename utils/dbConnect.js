@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const db_rrl = process.env.DB_URL;
 
-const dbConnect = async (databaseName) => {
+const dbConnect = async (databaseName, option) => {
   try {
     await mongoose.connect(db_rrl, { dbName: databaseName });
-    console.log(`connected to ${databaseName} database successfully`);
+    if (option === "console") {
+      console.log(`connected to ${databaseName} database successfully`);
+    }
   } catch (err) {
     console.log(err);
   }
@@ -13,7 +15,7 @@ const dbConnect = async (databaseName) => {
 const dbDisconnect = async () => {
   try {
     await mongoose.disconnect();
-    console.log(`disconnected successfully`);
+    return `disconnected successfully`;
   } catch (err) {
     console.log(err);
   }
