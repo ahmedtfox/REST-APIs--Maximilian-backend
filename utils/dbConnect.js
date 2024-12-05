@@ -5,9 +5,17 @@ const db_rrl = process.env.DB_URL;
 const dbConnect = async (databaseName) => {
   try {
     await mongoose.connect(db_rrl, { dbName: databaseName });
-    console.log(`connected to ${databaseName} successfully`);
+    console.log(`connected to ${databaseName} database successfully`);
   } catch (err) {
     console.log(err);
   }
 };
-module.exports = dbConnect;
+const dbDisconnect = async () => {
+  try {
+    await mongoose.disconnect();
+    console.log(`disconnected successfully`);
+  } catch (err) {
+    console.log(err);
+  }
+};
+module.exports = { dbConnect, dbDisconnect };

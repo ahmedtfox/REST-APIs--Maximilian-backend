@@ -6,7 +6,7 @@ const feedRoute = require("./routes/feed");
 const authRoute = require("./routes/auth");
 const app = express();
 const cors = require("cors");
-const connectDB = require("./utils/dbConnect");
+const { dbConnect } = require("./utils/dbConnect");
 const removeFile = require("./middlewares/removeFile");
 const moment = require("moment");
 const { Socket } = require("socket.io");
@@ -53,7 +53,7 @@ app.use((error, req, res, next) => {
 let server, io;
 const PORT = process.env.PORT;
 
-connectDB("REST-APIs-Maximilian-course");
+dbConnect("REST-APIs-Maximilian-course");
 
 server = app.listen(PORT, () => {
   console.log("Listening to port:" + PORT);
