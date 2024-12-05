@@ -73,3 +73,19 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
+exports.getStatus = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      const err = new Error("not authorized!");
+      err.statusCode = 422;
+      throw err;
+    }
+    res.status(200).json({ status: user.status });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+};

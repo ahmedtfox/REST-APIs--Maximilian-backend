@@ -181,18 +181,6 @@ exports.deletePost = (req, res, next) => {
   });
 };
 
-exports.getStatus = (req, res, next) => {
-  asyncWrapper(next, async () => {
-    const user = await User.findById(req.userId);
-    if (!user) {
-      const err = new Error("not authorized!");
-      err.statusCode = 422;
-      throw err;
-    }
-    res.status(200).json({ status: user.status });
-  });
-};
-
 exports.updateStatus = (req, res, next) => {
   asyncWrapper(next, async () => {
     const newStatus = req.body.status || "active";
