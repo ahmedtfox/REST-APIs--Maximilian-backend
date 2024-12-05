@@ -1,10 +1,9 @@
 const User = require("../model/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const asyncWrapper = require("../middlewares/asyncWrapper");
 
-exports.signup = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.signup = async (req, res, next) => {
+  try {
     const email = req.body.email;
     const passwordText = req.body.password;
     const name = req.body.name;
@@ -28,11 +27,16 @@ exports.signup = (req, res, next) => {
       message: "user created successfully!",
       post: result,
     });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
 };
 
-exports.login = (req, res, next) => {
-  asyncWrapper(next, async () => {
+exports.login = async (req, res, next) => {
+  try {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -62,5 +66,10 @@ exports.login = (req, res, next) => {
       token,
       userId,
     });
-  });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
 };
