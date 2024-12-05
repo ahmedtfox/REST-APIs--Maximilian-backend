@@ -56,13 +56,6 @@ const db_rrl = process.env.DB_URL;
 
 mongoose
   .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
-  .then((result) => {})
-  .catch((err) => {
-    console.log(err);
-  });
-
-mongoose
-  .connect(db_rrl, { dbName: "REST-APIs-Maximilian-course" })
   .then((result) => {
     console.log("connected to db successfully");
   })
