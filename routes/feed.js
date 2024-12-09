@@ -1,18 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const feedController = require("../controllers/feed");
-const upload = require("../utils/uploadFiles");
-const {
+import express from "express";
+import feedController from "../controllers/feed.js";
+import upload from "../utils/uploadFiles.js";
+import {
   validatePost,
   validateStatus,
   handleValidationErrors,
-} = require("../middlewares/validation");
+} from "../middlewares/validation.js";
+import isAuth from "../middlewares/is-auth.js";
 
-const isAuth = require("../middlewares/is-auth");
-
-router.get("/posts", isAuth, feedController.getPosts);
-router.get("/posts/:postId", isAuth, feedController.getPost);
-router.post(
+const feedRoute = express.Router();
+feedRoute.get("/posts", isAuth, feedController.getPosts);
+feedRoute.get("/posts/:postId", isAuth, feedController.getPost);
+feedRoute.post(
   "/post",
   isAuth,
   upload.single("image"),
@@ -21,7 +20,7 @@ router.post(
   feedController.createPost
 );
 
-router.put(
+feedRoute.put(
   "/posts/:postId",
   isAuth,
   validatePost,
@@ -29,14 +28,14 @@ router.put(
   feedController.updatePost
 );
 
-router.delete("/posts/:postId", isAuth, feedController.deletePost);
+feedRoute.delete("/posts/:postId", isAuth, feedController.deletePost);
 
-
-router.patch(
+feedRoute.patch(
   "/status",
   isAuth,
   validateStatus,
   handleValidationErrors,
   feedController.updateStatus
 );
-module.exports = router;
+
+export default feedRoute;

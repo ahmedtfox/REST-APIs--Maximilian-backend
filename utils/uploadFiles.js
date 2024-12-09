@@ -1,5 +1,5 @@
-const moment = require("moment");
-const multer = require("multer");
+import moment from "moment";
+import multer from "multer";
 
 const fileFilter = (req, file, cb) => {
   const fileType = file.mimetype;
@@ -31,4 +31,4 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage, fileFilter });
 
-module.exports = upload;
+export default upload;

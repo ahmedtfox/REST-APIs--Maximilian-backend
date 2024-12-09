@@ -1,6 +1,5 @@
-const fs = require("fs");
-const path = require("path");
-
+import fs from "fs";
+import path from "path";
 function removeFile(filename, filePath) {
   if (!filePath) {
     const filePath = path.join("images", filename);
@@ -12,4 +11,4 @@ function removeFile(filename, filePath) {
     console.log("file has been removed");
   });
 }
-module.exports = removeFile;
+export default removeFile;

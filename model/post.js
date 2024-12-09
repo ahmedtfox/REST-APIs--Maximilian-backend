@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const moment = require("moment");
+import mongoose from "mongoose";
+import moment from "moment";
 const schema = mongoose.Schema;
 const postSchema = new schema(
   {
@@ -36,4 +36,5 @@ postSchema.virtual("formattedUpdatedAt").get(function () {
 });
 
 const Model = mongoose.model("Post", postSchema);
-module.exports = Model;
+
+export default Model;

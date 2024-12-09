@@ -1,17 +1,18 @@
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-require("dotenv").config();
-const feedRoute = require("./routes/feed");
-const authRoute = require("./routes/auth");
+import express from "express";
 const app = express();
-const cors = require("cors");
-const { dbConnect } = require("./utils/dbConnect");
-const removeFile = require("./middlewares/removeFile");
-const moment = require("moment");
-const { Socket } = require("socket.io");
-const socket = require("./socket");
-const isAuth = require("./middlewares/is-auth");
+import path from "path";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+dotenv.config(); // Load .env file
+import feedRoute from "./routes/feed.js";
+import authRoute from "./routes/auth.js";
+import cors from "cors";
+import { dbConnect } from "./utils/dbConnect.js";
+import removeFile from "./utils/removeFile.js";
+import moment from "moment";
+import { Server as Socket } from "socket.io"; // Assuming you are using `socket.io` Server
+import socket from "./socket.js";
+import isAuth from "./middlewares/is-auth.js";
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -20,7 +21,11 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-app.use("/feed/images", isAuth, express.static(path.join(__dirname, "images")));
+app.use(
+  "/feed/images",
+  isAuth,
+  express.static(path.join(import.meta.dirname, "images"))
+);
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -51,7 +56,7 @@ app.use((error, req, res, next) => {
   });
 });
 let server, io;
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 /* dbConnect("REST-APIs-Maximilian-course").then((result) => {
   console.log(result);
@@ -62,7 +67,8 @@ dbConnect("REST-APIs-Maximilian-course", "console");
 server = app.listen(PORT, () => {
   console.log("Listening to port:" + PORT);
 });
-io = require("./socket").init(server);
+import ss from "./socket.js";
+io = ss.init(server);
 io.on("connection", (socket) => {
   console.log("Client connected");
   io.emit("on connection", "hi");

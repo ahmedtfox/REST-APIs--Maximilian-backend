@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config(); // Load .env file
 const db_rrl = process.env.DB_URL;
 
 const dbConnect = async (databaseName, option) => {
@@ -20,4 +21,4 @@ const dbDisconnect = async () => {
     console.log(err);
   }
 };
-module.exports = { dbConnect, dbDisconnect };
+export { dbConnect, dbDisconnect };

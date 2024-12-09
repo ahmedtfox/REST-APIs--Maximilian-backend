@@ -1,20 +1,21 @@
-const express = require("express");
-const router = express.Router();
-const authController = require("../controllers/auth");
-const isAuth = require("../middlewares/is-auth");
-const upload = require("../utils/uploadFiles");
-const {
+import express from "express";
+import authController from "../controllers/auth.js";
+import isAuth from "../middlewares/is-auth.js";
+
+const authRoute = express.Router();
+
+import {
   validateUser,
   handleValidationErrors,
-} = require("../middlewares/validation");
-
-router.post(
+} from "../middlewares/validation.js";
+authRoute.post(
   "/signup",
   validateUser,
   handleValidationErrors,
   authController.signup
 );
 
-router.post("/login", authController.login);
-router.get("/status", isAuth, authController.getStatus);
-module.exports = router;
+authRoute.post("/login", authController.login);
+authRoute.get("/status", isAuth, authController.getStatus);
+
+export default authRoute;

@@ -1,7 +1,6 @@
-const { body, validationResult } = require("express-validator");
-const User = require("../model/user");
+import { body, validationResult } from "express-validator";
 // Validation rules for creating a post
-const validatePost = [
+export const validatePost = [
   body("title")
     .trim()
     .isLength({ min: 5 })
@@ -12,7 +11,7 @@ const validatePost = [
     .withMessage("Content must be at least 5 characters long."),
 ];
 
-const validateUser = [
+export const validateUser = [
   body("email").isEmail().withMessage("Please enter a valid email."),
   body("name")
     .trim()
@@ -24,7 +23,7 @@ const validateUser = [
     .withMessage("Password must be at least 5 characters long."),
 ];
 
-const validateStatus = [
+export const validateStatus = [
   body("status")
     .trim()
     .not()
@@ -33,7 +32,7 @@ const validateStatus = [
 ];
 
 // Middleware to handle validation errors
-const handleValidationErrors = (req, res, next) => {
+export const handleValidationErrors = (req, res, next) => {
   const result = validationResult(req);
   if (result.isEmpty()) {
     next();
@@ -43,11 +42,4 @@ const handleValidationErrors = (req, res, next) => {
     err.errorDetails = result.array();
     return next(err);
   }
-};
-
-module.exports = {
-  validatePost,
-  validateUser,
-  validateStatus,
-  handleValidationErrors,
 };

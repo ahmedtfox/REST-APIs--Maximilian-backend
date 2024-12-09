@@ -1,9 +1,9 @@
-const Post = require("../model/post");
-const removeFile = require("../middlewares/removeFile");
-const User = require("../model/user");
-const io = require("../socket");
+import Post from "../model/post.js";
+import removeFile from "../utils/removeFile.js";
+import User from "../model/user.js";
+import io from "../socket.js";
 
-exports.getPosts = async (req, res, next) => {
+const getPosts = async (req, res, next) => {
   try {
     const limit = req.query.limit || 4;
     const page = req.query.page || 1;
@@ -27,7 +27,7 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
-exports.getPost = async (req, res, next) => {
+const getPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     const post = await Post.findById(postId, { __v: false });
@@ -45,7 +45,7 @@ exports.getPost = async (req, res, next) => {
   }
 };
 
-exports.createPost = async (req, res, next) => {
+const createPost = async (req, res, next) => {
   try {
     const title = req.body.title;
     const content = req.body.content;
@@ -91,7 +91,7 @@ exports.createPost = async (req, res, next) => {
   }
 };
 
-exports.updatePost = async (req, res, next) => {
+const updatePost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     let title = req.body.title;
@@ -166,7 +166,7 @@ exports.updatePost = async (req, res, next) => {
   }
 };
 
-exports.deletePost = async (req, res, next) => {
+const deletePost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     const post = await Post.findById(postId);
@@ -205,7 +205,7 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
-exports.updateStatus = async (req, res, next) => {
+const updateStatus = async (req, res, next) => {
   try {
     const newStatus = req.body.status || "active";
     const user = await User.findById(req.userId);
@@ -226,4 +226,13 @@ exports.updateStatus = async (req, res, next) => {
     }
     return next(error);
   }
+};
+
+export default {
+  getPost,
+  getPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  updateStatus,
 };
